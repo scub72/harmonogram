@@ -1,0 +1,85 @@
+=JEŻELI(
+	LEWY(
+		WYSZUKAJ.PIONOWO(
+			Plan!$A43&" "&Plan!AG$2;
+			'TK TT TA'!$B:$T;
+			12;
+			FAŁSZ
+			)
+		;3
+		)="n/d";
+
+	"n/d";
+
+	JEŻELI 2(
+		WYSZUKAJ.PIONOWO(
+				Plan!$A43&" "&Plan!AG$2;
+				'TK TT TA'!$B:$T;
+				13;
+				FAŁSZ
+				)<=0;
+
+        JEŻELI 2.1(
+            WYSZUKAJ.PIONOWO(
+                    Plan!$A43&" "&Plan!AG$2;
+                    'TK TT TA'!$B:$T;
+                    14;
+                    FAŁSZ
+                    )>0;
+            JEŻELI 2.1.1(
+                WYSZUKAJ.PIONOWO(
+                    Plan!$A43&" "&Plan!AG$2;
+                    'TK TT TA'!$B:$T;
+                    16;
+                    FAŁSZ
+                    )<=0;
+                "TT OPR";
+                JEŻELI 2.1.2.1(
+                    WYSZUKAJ.PIONOWO(
+                            Plan!$A43&" "&Plan!AG$2;
+                            'TK TT TA'!$B:$T;
+                            18;
+                            FAŁSZ
+                            )<=0;
+                    "TA DRUK";
+                    "WYD"
+                    )
+                );
+            "TK BRAK"
+            );
+
+        JEŻELI 2.2(
+            WYSZUKAJ.PIONOWO(
+                    Plan!$A43&" "&Plan!AG$2;
+                    'TK TT TA'!$B:$T;
+                    14;
+                    FAŁSZ
+                    )<=0;
+            "TK Plan "&WYSZUKAJ.PIONOWO(
+                        Plan!$A43&" "&Plan!AG$2;
+                        'TK TT TA'!$B:$T;
+                        13;
+                        FAŁSZ
+                        );
+            JEŻELI(
+                WYSZUKAJ.PIONOWO(
+                    Plan!$A43&" "&Plan!AG$2;
+                    'TK TT TA'!$B:$T;
+                    16;
+                    FAŁSZ
+                    )<=0;
+                "TT OPR";
+                JEŻELI(
+                    WYSZUKAJ.PIONOWO(
+                        Plan!$A43&" "&Plan!AG$2;
+                        'TK TT TA'!$B:$T;
+                        18;
+                        FAŁSZ
+                        )<=0;
+                    "TA DRUK";
+                    "WYD"
+                    )
+                )
+            )
+		)
+	)
