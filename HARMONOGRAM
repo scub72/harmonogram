@@ -1,0 +1,162 @@
+
+Function HARMONOGRAM(nr_fab_oraz_zlecenie As Range, nazwa_zespolu As Range)
+Application.Volatile
+
+Dim arkusz_MK_TT, arkusz_Plan As Worksheet
+Dim Result, zakr As Range
+Dim wydana_dokumentacja_z_TK, wydana_dokumentacja_z_TT, data_przekazania_na_produkcje_TA, wydano_na_produkcje As String
+Dim wynik As String
+Dim czy_nd As Variant
+Dim ID As String
+
+
+'Sprawdzene pola Kolumny od B do T w Arkusz2
+Set arkusz_MK_TT = Worksheets("MK_TT_TA")
+Set arkusz_Plan = Worksheets("Plan")
+Set zakr = Range("B:B")
+
+'ID = "20038 134- 1119"
+'MsgBox nr_fab_oraz_zlecenie.Address
+'MsgBox nazwa_zespolu.Address
+
+ID = nr_fab_oraz_zlecenie & " " & nazwa_zespolu
+'MsgBox ID
+
+
+Set Result = arkusz_MK_TT.Range("B:B").Find(what:=ID, LookIn:=xlValues, LookAt:=xlPart)
+
+If Result Is Nothing Then
+        HARMONOGRAM = "W??czony filtr w Arkuszu MK_TT_TA"
+
+Else
+          'Sprawdzenie czy wart. "n/d" kol. 11 "Numer rysunku"
+        czy_nd = Left(Result.Offset(, 11).Value, 3)
+
+                'Sprawdzenie czy wart. kol. 12 "Wydana dokumentacja z TK"
+        planowana_dokumentacja_z_TK = Result.Offset(, 12).Value
+        'MsgBox "Planowana dokumentacja z TK " & planowana_dokumentacja_z_TK
+
+                'Sprawdzenie czy wart. kol. 13 "Wydana dokumentacja z TK"
+        wydana_dokumentacja_z_TK = Result.Offset(, 13).Value
+        'MsgBox "Wydana dokumentacja z TK " & wydana_dokumentacja_z_TK
+
+                'Sprawdzenie czy wart. kol. 15 "Wydana dokumentacja z TT"
+        wydana_dokumentacja_z_TT = Result.Offset(, 15).Value
+        'MsgBox "Wydana dokumentacja z TT" & wydana_dokumentacja_z_TT
+
+                'Sprawdzenie czy wart. kol. 17 "Data przekazania na produkcje TA"
+        data_przekazania_na_produkcje_TA = Result.Offset(, 17).Value
+        'MsgBox "Przekazana na produkcje TA " & data_przekazania_na_produkcje_TA
+
+                'Sprawdzenie czy wart. kol. 18 "Osoba przekazujaca na produkcje"
+        wydano_na_produkcje = Result.Offset(, 18).Value
+        'MsgBox "Wydano na produkcje TA " & wydano_na_produkcje
+
+        ' jezeli1
+        If czy_nd = "n/d" Then
+                'MsgBox "n/d"
+            HARMONOGRAM = "n/d"
+        ' je?eli2
+        Else
+                If Len(wydana_dokumentacja_z_TT) > 0 Then
+
+                        If Len(data_przekazania_na_produkcje_TA) > 0 Then
+                                If Len(wydano_na_produkcje) > 0 Then
+                                        HARMONOGRAM = "WYD"
+                                Else
+                                        HARMONOGRAM = "TA DRUK"
+                                End If
+                        Else
+                                HARMONOGRAM = "TA DRUK"
+                        End If
+                Else
+                    If Len(planowana_dokumentacja_z_TK) <= 0 Then
+                    'jezeli 2.1
+                        If Len(wydana_dokumentacja_z_TK) > 0 Then
+                        'jezeli 2.1.1
+                            If Len(data_przekazania_na_produkcje_TA) <= 0 Then
+                                'MsgBox "TT OPR 2.1.1"
+                                HARMONOGRAM = "TT OPR"
+                            Else
+                                'jezeli 2.1.2.1
+                                If Len(wydano_na_produkcje) <= 0 Then
+                                        'MsgBox "TA DRUK 2.1.2.1"
+                                    HARMONOGRAM = "TA DRUK"
+                                Else
+                                        'MsgBox "WYD K 2.1.2.1"
+                                    HARMONOGRAM = "WYD"
+                                End If
+                            End If
+                        Else
+                                'MsgBox "TK BRAK else 2.1"
+                            HARMONOGRAM = "TK BRAK"
+                        End If
+                    'Jezeli 2.2
+                    Else
+                        'Jezeli 2.2.1
+                        If Len(wydana_dokumentacja_z_TK) <= 0 Then
+                            HARMONOGRAM = "TK Plan " & planowana_dokumentacja_z_TK
+                        Else
+                            'Jezeli 2.2.1
+                            If Len(wydana_dokumentacja_z_TT) <= 0 Then
+                                HARMONOGRAM = "TT OPR"
+                            Else
+                                If Len(wydano_na_produkcje) <= 0 Then
+                                        HARMONOGRAM = "TA DRUK"
+                                Else
+                                        HARMONOGRAM = "WYD"
+                                End If
+                            End If
+                        End If
+                    End If
+                End If
+        End If
+End If
+End Function
+
+Sub generowanie_tabeli()
+
+    Dim ostatni_wiersz As Long
+    Dim arr1 As Variant
+    Dim poczatek_arkusza_MK_TT As Range
+    Dim arkusz_MK_TT, arkusz_Plan As Worksheet
+    Dim odnosnik_arkusza As String
+
+    ' LibreOffice => "."
+    'Microsoft Excel => "!"
+    odnosnik_arkusza = "."
+
+
+    Set arkusz_Plan = Worksheets("Plan")
+    Set arkusz_MK_TT = Worksheets("MK_TT_TA")
+    Set poczatek_arkusza_MK_TT = arkusz_MK_TT.Range("A1")
+
+    arr1 = Array("P?yta wci?garki", "Przed?u?enie ramy", "Rama", "Podpory", "Burty", "Skrzynie", "Cz??? dolna", "Adaptacja podwozia mechaniczna", "Adaptacja podwozia elektryczna", "Korpus kolumny", "Kolumna", "Wysi?gnik", "Kosz", "Pomost roboczy", "Drabina", "Uk?ad wodny", "Z??cze hydrauliczne", "Z??cze elektryczne", "Uk?ad hydrauliczny cz. dolnej", "Uk?ad hydrauliczny kolumny", "Uk?ad hydrauliczny wysi?gnika", "Schemat hydrauliczny", "Uk?ad elektryczny cz. dolnej", "Uk?ad elektryczny kolumny", "Uk?ad elektryczny wysi?gnika", "Schemat elektryczny", "Kolorystyka", "Wykaz elektryki", "Wykaz hydrauliki i cylindrów", "Protokó? prób", "Zdj?cia do ITS", "Dokumenty do ITS", "Upowa?nienie", "Rejestracja", "Badanie typu", "DTR")
+
+
+    For k = 0 To 29
+        For j = LBound(arr1) To UBound(arr1)
+                ostatni_wiersz = arkusz_MK_TT.Cells(Rows.Count, 3).End(xlUp).Row
+                poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 11).Value = arr1(j)
+
+                For i = 0 To 8
+                poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 2 + i).Value = "=Plan" & odnosnik_arkusza & arkusz_Plan.Range("B3").Offset(k, i).Address
+
+                poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 0).Value = "=CONCATENATE(" & poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 5).Address & ";" & Chr(34) & " " & Chr(34) & ";" & poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 6).Address & " )"
+                poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 1).Value = "=CONCATENATE(" & poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 0).Address & ";" & Chr(34) & " " & Chr(34) & ";" & poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 11).Address & " )"
+                'poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 0).Value = "=TEXTJOIN(" & Chr(34) & " " & Chr(34) & ";TRUE;" & poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 5).Address & ";" & poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 6).Address & " )"
+                'poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 1).Value = "=TEXTJOIN(" & Chr(34) & " " & Chr(34) & ";TRUE;" & poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 0).Address & ";" & poczatek_arkusza_MK_TT.Offset(ostatni_wiersz, 11).Address & " )"
+
+
+                Next i
+        Next j
+   Next k
+End Sub
+
+
+Sub harmonogram_test()
+    Dim arkusz_MK_TT, arkusz_Plan As Worksheet
+    Set arkusz_MK_TT = Worksheets("MK_TT_TA")
+    Set arkusz_Plan = Worksheets("Plan")
+    Worksheets("Plan").Range("AC35").Value = HARMONOGRAM(arkusz_Plan.Range("A26"), arkusz_Plan.Range("AC2"))
+End Sub
